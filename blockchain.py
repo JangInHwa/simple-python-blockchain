@@ -7,6 +7,20 @@ class Blockchain:
 		self.chain = []
 		self.current_transactions = []
 		self.new_block(previous_hash=1, proof=100)
+	
+	def proof_of_work(self, last_proof:int):
+		proof = 0
+		while self.valid_proof(last_proof, proof, 4) is False:
+			proof += 1
+		return proof
+
+
+	@staticmethod
+	def valid_proof(last_proof:int, proof:int, dificulty:int):
+		guess = (str(last_proof) + str(proof)).encode()
+		guess_hash = hashlib.sha256(guess).hexdigest()
+		return guess_hash[:dificulty] == '0'*dificulty
+
 
 	def new_block(self, proof, previous_hash=None):
 		block = {
@@ -28,7 +42,7 @@ class Blockchain:
 		return self.last_block['index'] + 1
 
 	@staticmethod
-	def hash(block):
+	def hash(block)->str:
 		block_string = json.dumps(block, sort_keys=True).encode()
 		return hashlib.sha256(block_string).hexdigest()
 	
